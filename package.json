@@ -1,6 +1,6 @@
 {
   "name": "gestion-empleados-ga8",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Ejercicio de integración web GA8-220501096-AA1-EV01",
@@ -11,17 +11,19 @@
     "node": ">=24.15.0 <25"
   },
   "scripts": {
+    "db:start": "node scripts/start-database.mjs",
     "dev:api": "npm run dev --workspace backend",
     "start": "npm start --workspace backend",
     "check": "npm run check --workspace backend",
     "test": "npm test --workspace backend",
-    "lint": "eslint backend/src backend/test",
-    "format:check": "prettier --check backend package.json eslint.config.js"
+    "lint": "eslint backend/src backend/test scripts",
+    "format:check": "prettier --check backend scripts package.json eslint.config.js"
   },
   "devDependencies": {
-    "eslint": "^10.0.0",
     "@eslint/js": "^10.0.0",
+    "eslint": "^10.0.0",
     "globals": "^17.0.0",
+    "mongodb-memory-server-core": "^11.3.0",
     "prettier": "^3.6.0"
   }
 }

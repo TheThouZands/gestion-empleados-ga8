@@ -17,7 +17,13 @@ export const employeeSchema = new mongoose.Schema(
       },
     },
   },
-  { collection: 'empleados', timestamps: true, versionKey: false, strict: 'throw' },
+  {
+    collection: 'empleados',
+    timestamps: true,
+    versionKey: false,
+    strict: 'throw',
+    writeConcern: { w: 1, j: true },
+  },
 );
 
 export function createEmployeeModel(connection) {

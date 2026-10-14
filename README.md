@@ -10,6 +10,11 @@ Instale las dependencias desde la carpeta raíz con `npm ci`.
 
 ## Servidor
 
+Ejecute `npm run db:start` en una terminal. El primer inicio descarga MongoDB 8.2.6.
+Los siguientes inicios usan el binario guardado en `.local/mongo-binaries`.
+El proceso guarda los datos en `.local/mongodb` y escucha solo en la interfaz local.
+No borre esa carpeta si necesita conservar los registros.
+
 Ejecute `npm run dev:api`. El servidor escucha en `http://127.0.0.1:3210`.
 Consulte `GET /api/health` para comprobar el servicio.
 
