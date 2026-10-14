@@ -12,9 +12,15 @@ if (existsSync(envPath)) loadEnvFile(envPath);
 const config = readConfig();
 const connection = await connectDatabase(config.mongoUri);
 const repository = new MongoEmployeeRepository(createEmployeeModel(connection));
-const server = createApp({ repository, config }).listen(config.port, '127.0.0.1', () => {
-  console.log(`API disponible en http://127.0.0.1:${config.port}`);
-});
+const buildPath = fileURLToPath(new URL('../../frontend/dist/frontend/browser/', import.meta.url));
+const frontendPath = existsSync(buildPath + 'index.html') ? buildPath : undefined;
+const server = createApp({ repository, config, frontendPath }).listen(
+  config.port,
+  '127.0.0.1',
+  () => {
+    console.log(`Aplicación disponible en http://127.0.0.1:${config.port}`);
+  },
+);
 
 let closing = false;
 for (const signal of ['SIGINT', 'SIGTERM']) {

@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/error-handler.js';
 
 export function createApp({
   repository,
+  frontendPath,
   config = { clientOrigin: 'http://127.0.0.1:4210', port: 3210 },
 } = {}) {
   const app = express();
@@ -34,6 +35,10 @@ export function createApp({
     response.json({ status: 'ok', service: 'gestion-empleados' });
   });
   if (repository) app.use('/api/empleados', createEmployeeRouter(new EmployeeService(repository)));
+  if (frontendPath) {
+    app.use(express.static(frontendPath, { index: false }));
+    app.get('/', (_request, response) => response.sendFile('index.html', { root: frontendPath }));
+  }
   app.use((_request, _response, next) =>
     next(new HttpError(404, 'route_not_found', 'No se encontró la ruta.')),
   );
