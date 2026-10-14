@@ -91,7 +91,11 @@ POST y PUT reciben JSON con estas propiedades, y ninguna adicional:
 
 Los tres textos son obligatorios. Cada texto admite hasta 120 caracteres. El salario debe ser numérico, entre 0 y 1000000000, con un máximo de dos decimales. Se admite cero cuando el usuario lo introduce. La API devuelve `_id`, los cuatro campos y un mensaje según la operación. MongoDB también conserva fechas internas de creación y edición.
 
-La tabla consulta los registros mediante GET al abrir la página y después de cada creación. Al recargar, vuelve a mostrar los datos de MongoDB. Los salarios usan separadores de número en español. No se añade una pantalla de confirmación ni un mensaje emergente después de guardar.
+La tabla consulta los registros mediante GET al abrir la página y después de cada cambio. Al recargar, vuelve a mostrar los datos de MongoDB. Los salarios usan separadores de número en español. No se añade una pantalla de confirmación después de guardar.
+
+Cada fila tiene una acción de eliminación. El diálogo muestra el nombre del empleado y permite cancelar antes de enviar DELETE. Durante la solicitud, se bloquean los envíos repetidos. Si el servidor falla, el registro permanece visible y el diálogo permite otro intento.
+
+Guardar y eliminar muestran un toast de Materialize en la parte inferior. El aviso desaparece automáticamente después de unos segundos. La tabla permanece visible y es la fuente principal de información.
 
 Los rechazos usan JSON con `error.code` y `error.message`. Los estados principales son 400 para identificadores o JSON inválidos, 404 para recursos ausentes, 413 para cuerpos demasiado grandes, 415 para otro tipo de contenido y 422 para datos de empleado inválidos. Un fallo interno devuelve 500 sin exponer su detalle al cliente.
 
