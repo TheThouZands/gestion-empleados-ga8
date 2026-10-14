@@ -9,6 +9,12 @@ import { App } from './app.component';
 import { EmployeeForm } from './employees/employee-form.component';
 
 describe('App', () => {
+  function deletionDialog() {
+    const dialog = fixture.nativeElement.querySelector('.deletion-dialog') as HTMLDialogElement;
+    dialog.showModal = vi.fn();
+    dialog.close = vi.fn();
+    return dialog;
+  }
   beforeAll(() => registerLocaleData(spanishColombia));
   const employee = {
     _id: '507f1f77bcf86cd799439011',
@@ -104,5 +110,69 @@ describe('App', () => {
     expect(stale.cancelled).toBe(true);
     http.expectOne('/api/empleados').flush([employee]);
     expect(fixture.componentInstance.employees()).toEqual([employee]);
+  });
+
+  it('renders a named delete action for each row', () => {
+    expect(
+      fixture.nativeElement.querySelector('[aria-label="Eliminar a Ana Torres"]'),
+    ).toBeTruthy();
+  });
+  it('asks for deletion and permits cancellation without a request', () => {
+    const dialog = deletionDialog();
+    fixture.componentInstance.askDeletion(employee);
+    expect(dialog.showModal).toHaveBeenCalledOnce();
+    fixture.componentInstance.cancelDeletion();
+    expect(dialog.close).toHaveBeenCalledOnce();
+    expect(fixture.componentInstance.pendingDeletion()).toBe(null);
+    http.expectNone(`/api/empleados/${employee._id}`);
+  });
+  it('deletes the selected ID and refreshes the table', () => {
+    const dialog = deletionDialog();
+    fixture.componentInstance.askDeletion(employee);
+    fixture.componentInstance.confirmDeletion();
+    const request = http.expectOne(`/api/empleados/${employee._id}`);
+    expect(request.request.method).toBe('DELETE');
+    expect(fixture.componentInstance.deleting()).toBe(true);
+    request.flush({ status: 'Empleado eliminado' });
+    http.expectOne('/api/empleados').flush([]);
+    expect(dialog.close).toHaveBeenCalledOnce();
+    expect(fixture.componentInstance.employees()).toEqual([]);
+    expect(fixture.componentInstance.deleting()).toBe(false);
+  });
+  it('keeps the record and dialog on a delete failure', () => {
+    const dialog = deletionDialog();
+    fixture.componentInstance.askDeletion(employee);
+    fixture.componentInstance.confirmDeletion();
+    http
+      .expectOne(`/api/empleados/${employee._id}`)
+      .flush({}, { status: 500, statusText: 'Server Error' });
+    expect(dialog.close).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.employees()).toEqual([employee]);
+    expect(fixture.componentInstance.deleteError()).toBeTruthy();
+    expect(fixture.componentInstance.deleting()).toBe(false);
+  });
+  it('blocks duplicate delete requests and closing during deletion', () => {
+    const dialog = deletionDialog();
+    fixture.componentInstance.askDeletion(employee);
+    fixture.componentInstance.confirmDeletion();
+    fixture.componentInstance.confirmDeletion();
+    fixture.componentInstance.cancelDeletion();
+    expect(dialog.close).not.toHaveBeenCalled();
+    http.expectOne(`/api/empleados/${employee._id}`).flush({ status: 'Empleado eliminado' });
+    http.expectOne('/api/empleados').flush([]);
+  });
+  it('removes a record that the server reports as already absent', () => {
+    deletionDialog();
+    fixture.componentInstance.askDeletion(employee);
+    fixture.componentInstance.confirmDeletion();
+    http
+      .expectOne(`/api/empleados/${employee._id}`)
+      .flush({}, { status: 404, statusText: 'Not Found' });
+    http.expectOne('/api/empleados').flush([]);
+    expect(fixture.componentInstance.employees()).toEqual([]);
+  });
+  it('does not delete without a selected record', () => {
+    fixture.componentInstance.confirmDeletion();
+    http.expectNone(`/api/empleados/${employee._id}`);
   });
 });

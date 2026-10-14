@@ -171,3 +171,89 @@ tr:last-child td {
     margin-bottom: 96px;
   }
 }
+table {
+  min-width: 610px;
+}
+th:first-child {
+  width: 27%;
+}
+th:nth-child(2) {
+  width: 22%;
+}
+th:nth-child(3) {
+  width: 17%;
+}
+.actions {
+  width: 80px;
+  text-align: center;
+  padding: 12px;
+}
+.delete-button {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+  color: #607d8b;
+  cursor: pointer;
+}
+.delete-button:hover,
+.delete-button:focus {
+  background: #ffebee;
+  color: #b71c1c;
+}
+.deletion-dialog {
+  border: 0;
+  padding: 28px;
+  width: min(400px, calc(100% - 40px));
+  border-radius: 3px;
+  box-shadow: 0 16px 40px #00000038;
+}
+.deletion-dialog::backdrop {
+  background: #00000060;
+}
+.deletion-dialog h2 {
+  margin: 0 0 18px;
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 400;
+  color: #263238;
+}
+.deletion-dialog p {
+  margin: 0 0 24px;
+  color: #546e7a;
+  overflow-wrap: anywhere;
+}
+.delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.delete-actions button {
+  padding: 0 16px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.cancel-delete {
+  background: transparent;
+  color: #546e7a;
+}
+.confirm-delete {
+  background: #b71c1c;
+  color: #fff;
+  box-shadow: 0 2px 4px #00000026;
+}
+.deletion-dialog .delete-error {
+  color: #b71c1c;
+  font-size: 14px;
+}
+.delete-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

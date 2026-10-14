@@ -19,6 +19,7 @@
           <th scope="col">Cargo</th>
           <th scope="col">Oficina</th>
           <th class="salary" scope="col">Salario</th>
+          <th class="actions" scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -28,11 +29,23 @@
             <td>{{ employee.position }}</td>
             <td>{{ employee.office }}</td>
             <td class="salary">{{ employee.salary | number: '1.2-2' }}</td>
+            <td class="actions">
+              <button
+                class="delete-button"
+                type="button"
+                [attr.aria-label]="'Eliminar a ' + employee.name"
+                [title]="'Eliminar a ' + employee.name"
+                [disabled]="deleting()"
+                (click)="askDeletion(employee)"
+              >
+                <ng-icon name="matDeleteOutline" size="22" aria-hidden="true" />
+              </button>
+            </td>
           </tr>
         } @empty {
           @if (!loading() && !listError()) {
             <tr>
-              <td class="empty-list" colspan="4">Todavía no hay empleados.</td>
+              <td class="empty-list" colspan="5">Todavía no hay empleados.</td>
             </tr>
           }
         }
@@ -63,4 +76,35 @@
     <ng-icon name="matClose" size="24" aria-hidden="true" />
   </button>
   <app-employee-form (saved)="onSaved($event)" />
+</dialog>
+<dialog
+  #deletionDialog
+  class="deletion-dialog"
+  aria-labelledby="delete-title"
+  (cancel)="cancelDeletion($event)"
+>
+  <h2 id="delete-title">Eliminar empleado</h2>
+  <p>¿Eliminar el registro de {{ pendingDeletion()?.name }}?</p>
+  @if (deleteError()) {
+    <p class="delete-error" role="status">{{ deleteError() }}</p>
+  }
+  <div class="delete-actions">
+    <button
+      class="cancel-delete"
+      type="button"
+      (click)="cancelDeletion()"
+      [disabled]="deleting()"
+      autofocus
+    >
+      Cancelar
+    </button>
+    <button
+      class="confirm-delete"
+      type="button"
+      (click)="confirmDeletion()"
+      [disabled]="deleting()"
+    >
+      {{ deleting() ? 'Eliminando…' : 'Eliminar' }}
+    </button>
+  </div>
 </dialog>
