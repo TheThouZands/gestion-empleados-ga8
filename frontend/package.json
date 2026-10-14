@@ -1,6 +1,6 @@
 {
   "name": "@gestion-empleados/frontend",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4210 --proxy-config proxy.conf.json",

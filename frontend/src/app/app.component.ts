@@ -15,6 +15,7 @@ import { matAdd, matClose, matDeleteOutline } from '@ng-icons/material-icons/bas
 import { Employee } from './employees/employee';
 import { EmployeeForm } from './employees/employee-form.component';
 import { EmployeeService } from './employees/employee.service';
+import { MaterialToastService } from './material-toast.service';
 
 @Component({
   imports: [EmployeeForm, DecimalPipe, NgIcon],
@@ -30,6 +31,7 @@ export class App {
   private readonly deletionDialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('deletionDialog');
   private readonly service = inject(EmployeeService);
+  private readonly toast = inject(MaterialToastService);
   private readonly destroyRef = inject(DestroyRef);
   private listRequest?: Subscription;
   readonly employees = signal<Employee[]>([]);
@@ -75,6 +77,7 @@ export class App {
       employee,
     ]);
     this.dialog().nativeElement.close();
+    this.toast.show('Empleado guardado.');
     this.loadEmployees();
   }
 
@@ -107,16 +110,17 @@ export class App {
       .subscribe({
         next: () => this.finishDeletion(employee._id),
         error: (error) => {
-          if (error.status === 404) this.finishDeletion(employee._id);
+          if (error.status === 404) this.finishDeletion(employee._id, true);
           else this.deleteError.set('No se pudo eliminar el registro. Intente de nuevo.');
         },
       });
   }
 
-  private finishDeletion(id: string) {
+  private finishDeletion(id: string, alreadyAbsent = false) {
     this.employees.update((employees) => employees.filter((employee) => employee._id !== id));
     this.deletionDialog().nativeElement.close();
     this.pendingDeletion.set(null);
+    this.toast.show(alreadyAbsent ? 'El registro ya no existe.' : 'Empleado eliminado.');
     this.loadEmployees();
   }
 }

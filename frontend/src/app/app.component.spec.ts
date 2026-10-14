@@ -7,6 +7,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { By } from '@angular/platform-browser';
 import { App } from './app.component';
 import { EmployeeForm } from './employees/employee-form.component';
+import { MaterialToastService } from './material-toast.service';
 
 describe('App', () => {
   function deletionDialog() {
@@ -25,13 +26,16 @@ describe('App', () => {
   };
   let fixture: ComponentFixture<App>;
   let http: HttpTestingController;
+  const toast = { show: vi.fn() };
   beforeEach(async () => {
+    toast.show.mockClear();
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: LOCALE_ID, useValue: 'es-CO' },
+        { provide: MaterialToastService, useValue: toast },
       ],
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -71,6 +75,7 @@ describe('App', () => {
     fixture.componentInstance.onSaved(added);
     expect(dialog.close).toHaveBeenCalledOnce();
     expect(fixture.componentInstance.employees()).toEqual([employee, added]);
+    expect(toast.show).toHaveBeenCalledWith('Empleado guardado.');
     http.expectOne('/api/empleados').flush([employee, added]);
     expect(fixture.componentInstance.employees()).toEqual([employee, added]);
   });
@@ -138,6 +143,7 @@ describe('App', () => {
     expect(dialog.close).toHaveBeenCalledOnce();
     expect(fixture.componentInstance.employees()).toEqual([]);
     expect(fixture.componentInstance.deleting()).toBe(false);
+    expect(toast.show).toHaveBeenCalledWith('Empleado eliminado.');
   });
   it('keeps the record and dialog on a delete failure', () => {
     const dialog = deletionDialog();
