@@ -1,0 +1,295 @@
+{
+  "info": {
+    "name": "GA8-220501096-AA1-EV01 · Gestión de empleados",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "CRUD local del ejercicio. Ejecutar en orden. Usa datos ficticios y elimina únicamente el registro que crea en esta ejecución."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3210"
+    },
+    {
+      "key": "employeeId",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!new RegExp('^http://127[.]0[.]0[.]1:[0-9]+$').test(pm.variables.get('baseUrl'))) { pm.execution.skipRequest(); throw new Error('Esta colección solo permite el servidor local 127.0.0.1.'); }"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "EMP-01 · Estado del servidor",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/health"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.collectionVariables.unset('employeeId');"]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Servicio disponible', () => pm.expect(body.status).to.eql('ok'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-02 · Crear empleado",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/empleados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Persona de prueba\",\n  \"position\": \"Analista\",\n  \"office\": \"Bogotá\",\n  \"salary\": 2500000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "pm.test('Identificador válido', () => pm.expect(body.empleado._id).to.match(/^[a-f0-9]{24}$/));",
+              "pm.test('Datos guardados', () => pm.expect(body.empleado.name).to.eql('Persona de prueba'));",
+              "pm.test('Ubicación del recurso', () => pm.expect(pm.response.headers.get('Location')).to.eql('/api/empleados/' + body.empleado._id));",
+              "if (pm.response.code === 201 && body.empleado?._id) pm.collectionVariables.set('employeeId', body.empleado._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-03 · Consultar empleados",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/empleados"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Lista de empleados', () => pm.expect(body).to.be.an('array'));",
+              "pm.test('El registro creado está en la lista', () => pm.expect(body.some(item => item._id === pm.collectionVariables.get('employeeId'))).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-04 · Consultar por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/empleados/{{employeeId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Mismo identificador', () => pm.expect(body._id).to.eql(pm.collectionVariables.get('employeeId')));",
+              "pm.test('Salario numérico', () => pm.expect(body.salary).to.eql(2500000));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-05 · Actualizar empleado",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/empleados/{{employeeId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Persona de prueba\",\n  \"position\": \"Analista\",\n  \"office\": \"Cali\",\n  \"salary\": 3000000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Oficina actualizada', () => pm.expect(body.empleado.office).to.eql('Cali'));",
+              "pm.test('Salario actualizado', () => pm.expect(body.empleado.salary).to.eql(3000000));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-06 · Rechazar salario negativo",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/empleados",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Persona de prueba\",\n  \"position\": \"Analista\",\n  \"office\": \"Bogotá\",\n  \"salary\": -1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422', () => pm.response.to.have.status(422));",
+              "const body = pm.response.json();",
+              "pm.test('Error de validación', () => pm.expect(body.error.code).to.eql('invalid_employee'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-07 · Rechazar ID inválido",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/empleados/no-es-un-id"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "const body = pm.response.json();",
+              "pm.test('Error de identificador', () => pm.expect(body.error.code).to.eql('invalid_id'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-08 · Comprobar actualización guardada",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/empleados/{{employeeId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Cambio persistido', () => pm.expect(body.office).to.eql('Cali'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-09 · Eliminar solo el empleado creado",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/empleados/{{employeeId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Eliminación confirmada', () => pm.expect(body.status).to.eql('Empleado eliminado'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EMP-10 · Confirmar ausencia del empleado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/empleados/{{employeeId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+              "const body = pm.response.json();",
+              "pm.test('Recurso no encontrado', () => pm.expect(body.error.code).to.eql('employee_not_found'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

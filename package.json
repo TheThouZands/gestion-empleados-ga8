@@ -1,6 +1,6 @@
 {
   "name": "gestion-empleados-ga8",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
   "type": "module",
   "description": "Ejercicio de integración web GA8-220501096-AA1-EV01",
@@ -21,7 +21,7 @@
     "test": "npm test --workspace backend",
     "test:ui": "npm test --workspace frontend",
     "lint": "eslint backend/src backend/test scripts",
-    "format:check": "prettier --check backend scripts package.json eslint.config.js"
+    "format:check": "prettier --check backend scripts frontend/src frontend/angular.json frontend/proxy.conf.json frontend/package.json docs package.json eslint.config.js README.md"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
