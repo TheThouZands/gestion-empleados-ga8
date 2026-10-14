@@ -10,29 +10,41 @@
     <ng-icon name="matAdd" size="28" aria-hidden="true" />
   </button>
 </header>
-<main class="paper">
-  @if (lastEmployee(); as employee) {
-    <div class="paper-heading"><h2>Registro guardado</h2></div>
-    <section class="employee-summary" aria-label="Último registro enviado">
-      <h3>{{ employee.name }}</h3>
-      <p>{{ employee.position }} · {{ employee.office }}</p>
-      <dl>
-        <div>
-          <dt>Salario</dt>
-          <dd>{{ employee.salary | currency: '' : '' : '1.2-2' }}</dd>
-        </div>
-        <div>
-          <dt>ID</dt>
-          <dd class="employee-id">{{ employee._id }}</dd>
-        </div>
-      </dl>
-    </section>
-    <p class="paper-note">Use el botón + para registrar otro empleado.</p>
-  } @else {
-    <div class="paper-heading"><h2>Registro de empleados</h2></div>
-    <div class="welcome">
-      <p>Nombre, cargo, oficina y salario.</p>
-      <p>Use el botón + para agregar un empleado.</p>
+<main class="paper" [attr.aria-busy]="loading()">
+  <div class="table-scroll" role="region" aria-label="Lista de empleados" tabindex="0">
+    <table aria-label="Empleados registrados">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Cargo</th>
+          <th scope="col">Oficina</th>
+          <th class="salary" scope="col">Salario</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (employee of employees(); track employee._id) {
+          <tr>
+            <td>{{ employee.name }}</td>
+            <td>{{ employee.position }}</td>
+            <td>{{ employee.office }}</td>
+            <td class="salary">{{ employee.salary | number: '1.2-2' }}</td>
+          </tr>
+        } @empty {
+          @if (!loading() && !listError()) {
+            <tr>
+              <td class="empty-list" colspan="4">Todavía no hay empleados.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (listError()) {
+    <div class="list-error" role="status">
+      <p>{{ listError() }}</p>
+      <button class="retry-button" type="button" (click)="loadEmployees()">
+        Volver a intentar
+      </button>
     </div>
   }
 </main>
@@ -52,6 +64,3 @@
   </button>
   <app-employee-form (saved)="onSaved($event)" />
 </dialog>
-@if (lastEmployee()) {
-  <div class="confirmation" role="status" aria-live="polite">Empleado guardado.</div>
-}

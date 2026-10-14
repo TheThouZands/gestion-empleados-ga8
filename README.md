@@ -2,7 +2,7 @@
 
 Aplicación independiente para **GA8-220501096-AA1-EV01**, ficha 3235889. Integra un formulario Angular, una API REST de Express y una base de datos MongoDB. El ejercicio registra nombre, cargo, oficina y salario.
 
-El botón **+** abre el formulario. **Guardar** envía los datos al servidor. Después de guardar, el formulario se cierra y la pantalla muestra el registro enviado. **Limpiar** borra los campos sin guardar. El servidor también permite consultar, actualizar y eliminar registros mediante la API.
+La pantalla muestra una tabla con los empleados guardados en MongoDB. El botón **+** abre el formulario. **Guardar** envía los datos al servidor. Después de guardar, el formulario se cierra y la tabla se actualiza. **Limpiar** borra los campos sin guardar. El servidor también permite consultar, actualizar y eliminar registros mediante la API.
 
 Repositorio público: [TheThouZands/gestion-empleados-ga8](https://github.com/TheThouZands/gestion-empleados-ga8).
 
@@ -91,7 +91,7 @@ POST y PUT reciben JSON con estas propiedades, y ninguna adicional:
 
 Los tres textos son obligatorios. Cada texto admite hasta 120 caracteres. El salario debe ser numérico, entre 0 y 1000000000, con un máximo de dos decimales. Se admite cero cuando el usuario lo introduce. La API devuelve `_id`, los cuatro campos y un mensaje según la operación. MongoDB también conserva fechas internas de creación y edición.
 
-La pantalla muestra el último registro enviado durante la sesión de esa página. No es un directorio de empleados. Al recargar, esa confirmación visual se reinicia; los datos de MongoDB permanecen disponibles mediante la API.
+La tabla consulta los registros mediante GET al abrir la página y después de cada creación. Al recargar, vuelve a mostrar los datos de MongoDB. Los salarios usan separadores de número en español. No se añade una pantalla de confirmación ni un mensaje emergente después de guardar.
 
 Los rechazos usan JSON con `error.code` y `error.message`. Los estados principales son 400 para identificadores o JSON inválidos, 404 para recursos ausentes, 413 para cuerpos demasiado grandes, 415 para otro tipo de contenido y 422 para datos de empleado inválidos. Un fallo interno devuelve 500 sin exponer su detalle al cliente.
 
