@@ -1,0 +1,36 @@
+.registration-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 60px;
+  align-items: start;
+}
+.introduction {
+  padding-top: 20px;
+}
+.introduction p {
+  line-height: 1.7;
+  color: #455a64;
+}
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  color: #00695c !important;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.intro-note {
+  font-size: 14px;
+  margin-top: 22px;
+}
+@media (max-width: 760px) {
+  .registration-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .introduction {
+    padding-top: 0;
+  }
+  .intro-note {
+    margin-top: 8px;
+  }
+}

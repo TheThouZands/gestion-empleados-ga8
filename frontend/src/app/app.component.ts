@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { EmployeeForm } from './employees/employee-form.component';
 
 @Component({
-  imports: [],
+  imports: [EmployeeForm],
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
   styleUrl: './app.component.css',
