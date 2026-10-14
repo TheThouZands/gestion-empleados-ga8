@@ -7,6 +7,8 @@ dist/
 coverage/
 .angular/
 .idea/
+.vscode/
+frontend/public/favicon.ico
 .DS_Store
 *.log
 .playwright-cli/

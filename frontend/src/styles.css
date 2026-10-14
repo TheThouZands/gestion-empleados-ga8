@@ -1,0 +1,38 @@
+@import '@materializecss/materialize/dist/css/materialize.css';
+
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: #f7f9f8;
+  color: #263238;
+}
+
+body {
+  margin: 0;
+  background: #f7f9f8;
+}
+.container {
+  width: min(92%, 1080px);
+}
+.app-header {
+  padding: 22px 0;
+  background: #00695c;
+  box-shadow: 0 2px 6px #0000001a;
+}
+.app-brand {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+}
+main {
+  padding: 42px 0 60px;
+}
+h1 {
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 500;
+  margin: 0 0 24px;
+}
+:focus-visible {
+  outline: 3px solid #ffb300;
+  outline-offset: 4px;
+}
