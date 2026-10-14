@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -10,6 +17,7 @@ import {
 } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { EmployeeService } from './employee.service';
+import { Employee } from './employee';
 
 const nonBlank: ValidatorFn = (control) =>
   typeof control.value === 'string' && control.value.trim().length > 0 ? null : { required: true };
@@ -31,6 +39,7 @@ const validSalary: ValidatorFn = (control) => {
   styleUrl: './employee-form.component.css',
 })
 export class EmployeeForm {
+  readonly saved = output<Employee>();
   private readonly service = inject(EmployeeService);
   private readonly destroyRef = inject(DestroyRef);
   readonly busy = signal(false);
@@ -98,6 +107,7 @@ export class EmployeeForm {
           this.form.reset();
           this.savedId.set(result.empleado._id);
           this.notice.set('Empleado guardado. Puede registrar otro empleado.');
+          this.saved.emit(result.empleado);
         },
         error: (error: HttpErrorResponse) => {
           this.failed.set(true);

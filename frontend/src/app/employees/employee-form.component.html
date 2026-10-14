@@ -12,6 +12,7 @@
           >
           <input
             [id]="field.name"
+            [attr.autofocus]="field.name === 'name' ? '' : null"
             [name]="field.name"
             type="text"
             [formControlName]="field.name"

@@ -12,6 +12,7 @@ frontend/public/favicon.ico
 .DS_Store
 *.log
 .playwright-cli/
+design-qa.md
 .codebase-memory/
 output/
 tmp/

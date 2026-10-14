@@ -1,6 +1,6 @@
 {
   "name": "@gestion-empleados/frontend",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 127.0.0.1 --port 4210 --proxy-config proxy.conf.json",
@@ -19,7 +19,10 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
+    "@fontsource/roboto": "^5.3.0",
     "@materializecss/materialize": "2.4.0",
+    "@ng-icons/core": "^36.1.0",
+    "@ng-icons/material-icons": "^36.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

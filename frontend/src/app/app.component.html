@@ -1,14 +1,57 @@
 <header class="app-header">
-  <div class="container"><a class="app-brand" href="/">Gestión de empleados</a></div>
+  <div class="toolbar"><h1>Empleados</h1></div>
+  <button
+    class="btn-floating btn-large add-button"
+    type="button"
+    aria-label="Agregar empleado"
+    title="Agregar empleado"
+    (click)="openRegistration()"
+  >
+    <ng-icon name="matAdd" size="28" aria-hidden="true" />
+  </button>
 </header>
-<main class="container">
-  <div class="registration-layout">
-    <div class="introduction">
-      <p class="eyebrow">REGISTRO</p>
-      <h1>Registro de empleados</h1>
-      <p>Ingrese los datos del empleado y guarde el registro.</p>
-      <p class="intro-note">Use Limpiar para empezar de nuevo.</p>
+<main class="paper">
+  @if (lastEmployee(); as employee) {
+    <div class="paper-heading"><h2>Registro guardado</h2></div>
+    <section class="employee-summary" aria-label="Último registro enviado">
+      <h3>{{ employee.name }}</h3>
+      <p>{{ employee.position }} · {{ employee.office }}</p>
+      <dl>
+        <div>
+          <dt>Salario</dt>
+          <dd>{{ employee.salary | currency: '' : '' : '1.2-2' }}</dd>
+        </div>
+        <div>
+          <dt>ID</dt>
+          <dd class="employee-id">{{ employee._id }}</dd>
+        </div>
+      </dl>
+    </section>
+    <p class="paper-note">Use el botón + para registrar otro empleado.</p>
+  } @else {
+    <div class="paper-heading"><h2>Registro de empleados</h2></div>
+    <div class="welcome">
+      <p>Nombre, cargo, oficina y salario.</p>
+      <p>Use el botón + para agregar un empleado.</p>
     </div>
-    <app-employee-form />
-  </div>
+  }
 </main>
+<dialog
+  #registrationDialog
+  class="registration-dialog"
+  aria-labelledby="form-title"
+  (cancel)="closeRegistration($event)"
+>
+  <button
+    class="close-button"
+    type="button"
+    aria-label="Cerrar formulario"
+    (click)="closeRegistration()"
+  >
+    <ng-icon name="matClose" size="24" aria-hidden="true" />
+  </button>
+  <app-employee-form (saved)="onSaved($event)" />
+</dialog>
+@if (lastEmployee()) {
+  <div class="confirmation" role="status" aria-live="polite">Empleado guardado.</div>
+}
