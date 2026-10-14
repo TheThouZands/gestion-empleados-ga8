@@ -22,7 +22,12 @@ test(
     assert.ok(resolve(dataPath).startsWith(testsRoot + sep));
     const database = new MongoMemoryServer({
       binary: { version: '8.2.6', downloadDir: resolve(projectRoot, '.local/mongo-binaries') },
-      instance: { dbPath: dataPath, storageEngine: 'wiredTiger' },
+      instance: {
+        dbPath: dataPath,
+        storageEngine: 'wiredTiger',
+        // Keep the journal enabled, but avoid reserving large log files for a tiny test store.
+        args: ['--wiredTigerEngineConfigString', 'log=(prealloc=false,file_max=20MB)'],
+      },
     });
     let connection;
     try {
