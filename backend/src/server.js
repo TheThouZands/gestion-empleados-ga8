@@ -4,12 +4,15 @@ import { connectDatabase } from './database.js';
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { createEmployeeModel } from './models/employee.js';
+import { MongoEmployeeRepository } from './repositories/mongo-employee-repository.js';
 
 const envPath = fileURLToPath(new URL('../../.env', import.meta.url));
 if (existsSync(envPath)) loadEnvFile(envPath);
 const config = readConfig();
 const connection = await connectDatabase(config.mongoUri);
-const server = createApp().listen(config.port, '127.0.0.1', () => {
+const repository = new MongoEmployeeRepository(createEmployeeModel(connection));
+const server = createApp({ repository, config }).listen(config.port, '127.0.0.1', () => {
   console.log(`API disponible en http://127.0.0.1:${config.port}`);
 });
 
