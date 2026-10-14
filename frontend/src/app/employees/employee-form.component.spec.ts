@@ -71,12 +71,10 @@ describe('EmployeeForm', () => {
     form.save();
     form.clear();
     expect(form.form.getRawValue()).toEqual(input);
-    http
-      .expectOne('/api/empleados')
-      .flush({
-        status: 'Empleado guardado',
-        empleado: { ...input, _id: '507f1f77bcf86cd799439011' },
-      });
+    http.expectOne('/api/empleados').flush({
+      status: 'Empleado guardado',
+      empleado: { ...input, _id: '507f1f77bcf86cd799439011' },
+    });
   });
   it('clears values and feedback without sending a request', () => {
     form.form.setValue(input);
